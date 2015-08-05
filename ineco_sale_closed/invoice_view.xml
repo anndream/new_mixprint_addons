@@ -8,7 +8,7 @@
 	      	<field name="arch" type="xml">    
 	      		<button name="action_cancel_draft" position="before">
 	      			<button name="%(action_select_close_saleorder)d" 
-	      				attrs="{'invisible':[('close_sale_no', '!=', False)]}"
+	      				attrs="{'invisible':['|',('close_sale_no', '!=', False),('residual','!=',0)]}"
 	      				string="Close Sales" type="action" /> 
 	      		</button>
 	      		<field name="account_id" position="after">

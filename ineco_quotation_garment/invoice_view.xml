@@ -180,5 +180,61 @@
             </field>
         </record>
 
+
+        <!-- List Close Sale No -->
+        <record id="view_ineco_quotation_closesale_tree" model="ir.ui.view">
+            <field name="name">ineco.quotation.closesale.tree</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <tree string="Quotation" fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')" editable="top">
+                    <field name="message_unread" invisible="1"/>
+                    <field name="name" string="Quotation No" readonly="1"/>
+                    <field name="garment_order_no" readonly="1"/>
+                    <field name="garment_order_date" readonly="1"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="user_id" readonly="1"/>
+                    <field name="sale_close_no" />
+                    <field name="manager_user_id" invisible="1" />
+                    <field name="deposit" invisible="1" />
+                    <field name="amount_total" sum="Total Tax Included"/>
+                    <field name="residual" invisible="1" />
+                    <field name="sale_revision" invisible="1" />
+                    <field name="state" readonly="1" />
+                    <field name="date_sale_close" invisible="1" />
+                    <field name="start_production" invisible="1" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ineco_quotation_saleclose" model="ir.actions.act_window">
+            <field name="name">Sale Close No</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_ineco_quotation_closesale_tree"/>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="domain">[('garment_order_no','!=',False),('state','not in',['cancel'])]</field>
+            <field name="search_view_id" ref="view_ineco_process_cost_search"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a quotation, the first step of a new sale.
+              </p><p>
+                OpenERP will help you handle efficiently the complete sale flow:
+                from the quotation to the sale order, the
+                delivery, the invoicing and the payment collection.
+              </p><p>
+                The social feature helps you organize discussions on each sale
+                order, and allow your customers to keep track of the evolution
+                of the sale order.
+              </p>
+            </field>
+        </record>
+
+		<menuitem action="action_ineco_quotation_saleclose"
+		    id="menu_sale_close_no"
+		    parent="account.menu_finance_receivables"
+		    sequence="20"/>
+
     </data>
 </openerp>

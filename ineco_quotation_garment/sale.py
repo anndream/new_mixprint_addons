@@ -564,6 +564,7 @@ class sale_order(osv.osv):
                 default_path = '/Users/Tititab/pdf'
             else:
                 default_path = '/media/mixprint/openerp'
+            print default_path
             report_param = {}
             default_path = default_path + '/%s' % (cr.dbname)
             if not os.path.exists(default_path):
@@ -1040,18 +1041,19 @@ class ineco_sale_order_process(osv.osv):
         result = dict.fromkeys(ids, False)
         for obj in self.browse(cr, uid, ids, context=context):
             order_total = 0.0
-            sql = """
-                select coalesce(round(sum(sol.product_uom_qty)),0)
-                from sale_order_line sol
-                join product_product pp on pp.id = sol.product_id
-                join product_template pt on pt.id = pp.product_tmpl_id
-                where order_id = %s
-                  and pt.type <> 'service'
-                """ % obj.sale_order_id.id
-            cr.execute(sql)
-            data = cr.fetchone()
-            if data and data[0]:
-                order_total = data[0] or 0.0
+            if obj.sale_order_id:
+                sql = """
+                    select coalesce(round(sum(sol.product_uom_qty)),0)
+                    from sale_order_line sol
+                    join product_product pp on pp.id = sol.product_id
+                    join product_template pt on pt.id = pp.product_tmpl_id
+                    where order_id = %s
+                      and pt.type <> 'service'
+                    """ % obj.sale_order_id.id
+                cr.execute(sql)
+                data = cr.fetchone()
+                if data and data[0]:
+                    order_total = data[0] or 0.0
             result[obj.id] = {
                 'order_total': 0.0,
                 'order_total_dozen': 0.0,
