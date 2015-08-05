@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+
+      <!-- Sale Menu -->
+      
+       <menuitem name="Report"
+            id="menu_ineco_hr_report"
+            parent="hr.menu_hr_root" sequence="100" />
+                   
+       <!--  Jasper HR Report Tree -->
+       <record model="ir.ui.view" id="view_ineco_hr_report_tree">
+            <field name="name">ineco.hr.report.tree</field>
+            <field name="model">ineco.jasper.report</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Jasper Report">
+					<field name="label" />
+					<button name="browse_report" string="Run" type="object" icon="gtk-ok"/>										
+				</tree>
+            </field>
+        </record>
+
+        <!--  Jasper HR Report Search -->
+       <record model="ir.ui.view" id="view_ineco_hr_report_search">
+            <field name="name">ineco.hr.report.search</field>
+            <field name="model">ineco.jasper.report</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="HR Report">
+					<field name="label" />
+              	</search>
+            </field>
+        </record>
+        
+        <!-- Jasper HR Report Action  -->
+        <record model="ir.actions.act_window" id="action_view_ineco_hr_report">
+            <field name="name">HR Report</field>
+            <field name="res_model">ineco.jasper.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">['|',('module','=','hr'),('module','=',False)]</field>
+            <field name="view_id" ref="view_ineco_hr_report_tree"/>
+        </record>
+       
+      	<menuitem name="HR Reports"
+            id="menu_ineco_hr_report_list"
+            parent="menu_ineco_hr_report"
+            action="action_view_ineco_hr_report"
+            sequence="10" />
+
+        	    	    	    
+	</data>
+</openerp>
