@@ -17,6 +17,7 @@
             <field name="arch" type="xml">
                 <tree string="Jasper Report">
 					<field name="label" />
+                    <field name="report_group_id" invisible="1" />
 					<button name="browse_report" string="Run" type="object" icon="gtk-ok"/>										
 				</tree>
             </field>
@@ -41,7 +42,8 @@
             <field name="view_type">form</field>
             <field name="domain">['|',('module','=','account'),('module','=',False)]</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="view_ineco_account_report_tree"/>            
+            <field name="view_id" ref="view_ineco_account_report_tree"/>
+            <field name="search_view_id" ref="ineco_jasper_report.view_ineco_jasper_report_search"/>
         </record>
        
       	<menuitem name="Account Reports"

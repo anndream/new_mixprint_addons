@@ -153,8 +153,15 @@ npxHqLH2SWP9D8t1jwIDAQAB
                             report.button_check_param()
                         
         return True
-    
-ineco_jasper_server()
+
+class ineco_jasper_report_group(osv.osv):
+    _name = 'ineco.jasper.report.group'
+    _columns = {
+        'name': fields.char('Report Group', required=True),
+    }
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'Report group must be unique!'),
+    ]
 
 class ineco_jasper_report(osv.osv):
     
@@ -172,7 +179,8 @@ class ineco_jasper_report(osv.osv):
                                    ('account', 'Account'),
                                    ('warehouse', 'Warehouse'),
                                    ('hr','HR')], 'Module' ),
-        'group_ids': fields.many2many('res.groups', 'jasperreport_group_rel', 'jasperreport_id', 'group_id', 'Groups'),                
+        'group_ids': fields.many2many('res.groups', 'jasperreport_group_rel', 'jasperreport_id', 'group_id', 'Groups'),
+        'report_group_id': fields.many2one('ineco.jasper.report.group', 'Group'),
     }
 
     _sql_constraints = [
@@ -234,8 +242,7 @@ class ineco_jasper_report(osv.osv):
                         report_obj.create(cr, uid, data)
         
         return True
-    
-ineco_jasper_report()
+
 
 class ineco_jasper_report_params(osv.osv):
     
@@ -251,5 +258,4 @@ class ineco_jasper_report_params(osv.osv):
     _sql_constraints = [
         ('name_uniq', 'unique(param_name,report_id)', 'Report and Parameters must be unique!'),
     ]
-    
-ineco_jasper_report_params()
+
