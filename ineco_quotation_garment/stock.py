@@ -842,7 +842,12 @@ class ineco_stock_packing(osv.osv):
                 line.button_done()
             data.write({'state':'done'})
         return True
-    
+
+    def button_draft(self, cr, uid, ids, context=None):
+        for data in self.browse(cr, uid, ids):
+            data.write({'state':'draft'})
+        return True
+
     def button_load(self, cr, uid, ids, context=None):
         obj_picking = self.pool.get('stock.picking')
         obj_packing_line = self.pool.get('ineco.stock.packing.line')
@@ -904,32 +909,33 @@ class ineco_stock_packing_line(osv.osv):
         move_obj = self.pool.get('stock.move')
         prodlot_obj = self.pool.get('stock.production.lot')
         for data in self.browse(cr, uid, ids):
-            if data.stock_move_id and data.stock_move_id.product_qty >= data.quantity:
-                seq = data.packing_id.sequence or 1.0
-                prodlot_ids = prodlot_obj.search(cr, uid, [('name','=',seq),('product_id','=',data.product_id.id)])
-                prodlot_id = False
-                if not prodlot_ids:
-                    prodlot_id = prodlot_obj.create(cr, uid, {'name':seq,'product_id':data.product_id.id})
-                else:
-                    prodlot_id = prodlot_ids[0]
-                default_val = {
-                    'product_qty': data.quantity,
-                    'product_uos_qty': data.quantity,
-                    'state': 'assigned',
-                    'prodlot_id': prodlot_id,
-                }
-                weight = 0.0
-                if data.id == data.packing_id.line_ids[0].id:
-                    weight = data.packing_id.weight
-                    default_val.update({'product_weight': weight})
-                    print weight
-                if data.stock_move_id.product_qty == data.quantity:
-                    if data.state != 'done':
-                        move_obj.write(cr, uid, [data.stock_move_id.id],{'prodlot_id':prodlot_id,'state':'assigned','product_weight': weight})
-                else:
-                    if data.state != 'done':
-                        new_move_id = move_obj.copy(cr, uid, data.stock_move_id.id, default_val, context=context)
-                        move_obj.write(cr, uid, [data.stock_move_id.id],{'product_qty':data.stock_move_id.product_qty - data.quantity,
-                                                                         'state':'assigned'})
-                data.write({'state':'done'})
+            if data.state != 'done':
+                if data.stock_move_id and data.stock_move_id.product_qty >= data.quantity:
+                    seq = data.packing_id.sequence or 1.0
+                    prodlot_ids = prodlot_obj.search(cr, uid, [('name','=',seq),('product_id','=',data.product_id.id)])
+                    prodlot_id = False
+                    if not prodlot_ids:
+                        prodlot_id = prodlot_obj.create(cr, uid, {'name':seq,'product_id':data.product_id.id})
+                    else:
+                        prodlot_id = prodlot_ids[0]
+                    default_val = {
+                        'product_qty': data.quantity,
+                        'product_uos_qty': data.quantity,
+                        'state': 'assigned',
+                        'prodlot_id': prodlot_id,
+                    }
+                    weight = 0.0
+                    if data.id == data.packing_id.line_ids[0].id:
+                        weight = data.packing_id.weight
+                        default_val.update({'product_weight': weight})
+                        print weight
+                    if data.stock_move_id.product_qty == data.quantity:
+                        if data.state != 'done':
+                            move_obj.write(cr, uid, [data.stock_move_id.id],{'prodlot_id':prodlot_id,'state':'assigned','product_weight': weight})
+                    else:
+                        if data.state != 'done':
+                            new_move_id = move_obj.copy(cr, uid, data.stock_move_id.id, default_val, context=context)
+                            move_obj.write(cr, uid, [data.stock_move_id.id],{'product_qty':data.stock_move_id.product_qty - data.quantity,
+                                                                             'state':'assigned'})
+                    data.write({'state':'done'})
         return True

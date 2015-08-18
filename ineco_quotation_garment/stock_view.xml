@@ -505,6 +505,7 @@
                 	<header>
                         <button name="button_done" type="object" states="draft" string="Done" />
                         <button name="button_cancel" type="object" states="draft" string="Cancel" />
+                        <button name="button_draft" type="object" states="done,cancel" string="Set Draft" />
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel" />                		
                 	</header>
                 	<sheet>
