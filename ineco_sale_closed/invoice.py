@@ -48,10 +48,33 @@ class account_invoice(osv.osv):
                     sale_close_no = sale_data['sale_close_no']
             res[data.id] = sale_close_no
         return res
-        
+
+    def get_delivery_amount(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        sql = """
+            select
+              ail.quantity * ail.price_unit as total
+            from
+              account_invoice_line ail
+              join account_invoice ai on ai.id = ail.invoice_id
+              join product_product pp on ail.product_id = pp.id
+            where
+              pp.no_commission = True
+              and ai.id = %s
+          """
+        for data in self.browse(cr, uid, ids):
+            total = 0.00
+            cr.execute(sql % data.id)
+            sale_data = cr.dictfetchone()
+            if sale_data:
+                total = sale_data['total']
+            res[data.id] = total
+        return res
+
     _inherit = "account.invoice"
     _columns = {
         'close_sale_no': fields.function(get_close_sale_no, type='char', size=64, string="Sale Close No", readonly=True),
+        'amount_delivery': fields.function(get_delivery_amount, type='float', digits=(12,4) , string="Amount Delivery", readonly=True),
     }
     
     def button_close_sale(self, cr, uid, ids, context=None):

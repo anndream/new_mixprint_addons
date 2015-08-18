@@ -74,7 +74,8 @@ class wizard_select_close_saleorder(osv.osv_memory):
                     #Add Commission Line
                     commission_rate = invoice.user_id.commission_rate / 100
                     invoice_amount = invoice.amount_untaxed or 0.00
-                    commission = invoice_amount * commission_rate
+                    #Minus Product no Commission
+                    commission = (invoice_amount - invoice.amount_delivery) * commission_rate
                     invoice.write({'commission_sale': commission,'commission_date': time.strftime('%Y-%m-%d') })
 
             if sale_ids:
