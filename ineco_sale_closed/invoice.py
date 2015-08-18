@@ -75,6 +75,7 @@ class account_invoice(osv.osv):
     _columns = {
         'close_sale_no': fields.function(get_close_sale_no, type='char', size=64, string="Sale Close No", readonly=True),
         'amount_delivery': fields.function(get_delivery_amount, type='float', digits=(12,4) , string="Amount Delivery", readonly=True),
+        'new_close_sale_no': fields.char('Next Close Sale', size=32),
     }
     
     def button_close_sale(self, cr, uid, ids, context=None):

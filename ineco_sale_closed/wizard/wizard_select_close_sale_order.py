@@ -65,7 +65,13 @@ class wizard_select_close_saleorder(osv.osv_memory):
         data = self.read(cr, uid, ids, [], context=context)[0]
         if data:
             sale_ids = []
+            new_close_sale = {}
             for invoice in self.pool.get('account.invoice').browse(cr, uid, data['invoice_ids']):
+                if invoice.journal_id and invoice.journal_id.close_sale_sequence_id:
+                    if not new_close_sale.has_key(invoice.journal_id.close_sale_sequence_id.id):
+                        new_close_sale[invoice.journal_id.close_sale_sequence_id.id] = []
+                    if not invoice.id in new_close_sale[invoice.journal_id.close_sale_sequence_id.id]:
+                        new_close_sale[invoice.journal_id.close_sale_sequence_id.id].append(invoice.id)
                 if invoice.origin:
                     sale_no_list = invoice.origin.split(':')
                     sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('name','in',sale_no_list),('sale_close_no','=',False)])
@@ -79,9 +85,12 @@ class wizard_select_close_saleorder(osv.osv_memory):
                     invoice.write({'commission_sale': commission,'commission_date': time.strftime('%Y-%m-%d') })
 
             if sale_ids:
-                #print sale_ids
                 next_no = self.pool.get('ir.sequence').get(cr, uid, 'ineco.sale.close') or False
                 self.pool.get('sale.order').write(cr, uid, sale_ids, {'sale_close_no': next_no})
+            for sequence in new_close_sale:
+                sequence_obj = self.pool.get('ir.sequence').browse(cr, uid, sequence )
+                next_no = self.pool.get('ir.sequence').get(cr, uid, sequence_obj.code) or False
+                self.pool.get('account.invoice').write(cr, uid, new_close_sale[sequence],{'new_close_sale_no': next_no})
         return True
 
 wizard_select_close_saleorder()

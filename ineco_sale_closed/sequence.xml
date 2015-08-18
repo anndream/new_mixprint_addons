@@ -16,5 +16,33 @@
             <field name="number_increment">1</field>
         </record>
 
+        <record id="sequence_sale_close_tax_type" model="ir.sequence.type">
+            <field name="name">Tax Sale Close</field>
+            <field name="code">ineco.sale.close.tax</field>
+        </record>
+
+        <record id="sequence_sale_close_tax" model="ir.sequence">
+            <field name="name">Tax Sale Close</field>
+            <field name="code">ineco.sale.close.tax</field>
+            <field name="prefix">TS58%(month)s-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_sale_close_notax_type" model="ir.sequence.type">
+            <field name="name">No Tax Sale Close</field>
+            <field name="code">ineco.sale.close.notax</field>
+        </record>
+
+        <record id="sequence_sale_close_notax" model="ir.sequence">
+            <field name="name">No Tax Sale Close</field>
+            <field name="code">ineco.sale.close.notax</field>
+            <field name="prefix">TN58%(month)s-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
     </data>
 </openerp>

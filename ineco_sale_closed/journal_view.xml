@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="view_ineco_closesale_account_journal_tree" model="ir.ui.view">
+            <field name="name">closesale.account.journal.tree</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_tree" />
+            <field name="arch" type="xml">
+            	<field name="type" position="after">
+            		<field name="close_sale_sequence_id" />
+            	</field>
+            </field>
+        </record>
+
+    	<record id="view_ineco_closesale_account_journal_form" model="ir.ui.view">
+            <field name="name">closesale.account.journal.form</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form" />
+            <field name="arch" type="xml">
+            	<field name="sequence_id" position="after">
+            		<field name="close_sale_sequence_id" />
+            	</field>
+            </field>
+        </record>
+
+    </data>
+</openerp>

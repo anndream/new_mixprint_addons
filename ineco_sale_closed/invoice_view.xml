@@ -13,6 +13,7 @@
 	      		</button>
 	      		<field name="account_id" position="after">
 	      			<field name="close_sale_no" />
+					<field name="new_close_sale_no" />
 	      		</field>
 	      	</field>
 	    </record>

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2012 - INECO PARTNERSHIP LIMITED (<http://www.ineco.co.th>).
+#    Copyright (C) 2004-Today INECO LTD,. PART. (<http://www.ineco.co.th>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,28 +19,10 @@
 #
 ##############################################################################
 
-{
-    'name' : 'INECO Sale Closed',
-    'version' : '0.1',
-    'depends' : ['base','sale','account'],
-    'author' : 'Mr.Tititab Srisookco',
-    'category': 'INECO',
-    'description': """
-    """,
-    'website': 'http://www.ineco.co.th',
-    'data': [],
-    'update_xml': [
-        'sequence.xml',
-        'wizard/wizard_select_close_sale_order_view.xml',
-        'invoice_view.xml',
-        'product_view.xml',
-        'journal_view.xml',
-        #'sale_view.xml',
-    ],
-    'demo': [],
-    'installable': True,
-    'auto_install': False,
-    'images': [],
-}
+from openerp.osv import osv, fields
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+class account_journal(osv.osv):
+    _inherit = 'account.journal'
+    _columns = {
+        'close_sale_sequence_id': fields.many2one('ir.sequence', 'Close Sale Sequence'),
+    }
