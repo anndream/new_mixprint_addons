@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2014-Today INECO., Part., Ltd. (<http://www.ineco.co.th>).
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,20 +18,25 @@
 #
 ##############################################################################
 
-import wizard_update_production_start
-import wizard_start_workorder
-import wizard_done_workorder
-import wizard_pattern_select
-import wizard_update_otherinfo
-import wizard_pattern_copy
-import wizard_update_routing
-import wizard_update_printmo
-import wizard_update_printplan
-import wizard_make_collar
-import wizard_ticket_split
-import wizard_change_invoiced
-import wizard_prepare_commission
-import wizard_pay_commission
-import wizard_cheque_action
-import wizard_collar
-import wizard_sale_remove_tax
+from openerp.osv import fields, osv
+
+class ineco_sale_remove_tax(osv.osv_memory):
+    _name = "ineco.sale.remove.tax"
+    _description = "Remove Tax"
+
+    _columns = {
+    }
+
+    def update_sale(self, cr, uid, ids, context=None):
+        #data = self.browse(cr, uid, ids)[0]
+        for id in context['active_ids']:
+            sale_obj = self.pool.get('sale.order').browse(cr, uid, id)
+            self.pool.get('sale.order').log(cr, uid, id, 'Remove Tax!')
+            update_sql = """
+               update sale_order
+               set amount_total = amount_untaxed, amount_tax = 0.00
+               where id = %s
+            """
+            cr.execute(update_sql % id)
+        return {'type': 'ir.actions.act_window_close'}
+

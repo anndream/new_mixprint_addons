@@ -190,12 +190,13 @@
                     <field name="message_unread" invisible="1"/>
                     <field name="name" string="Quotation No" readonly="1"/>
                     <field name="garment_order_no" readonly="1"/>
-                    <field name="garment_order_date" readonly="1"/>
+                    <field name="garment_order_date" invisible="1"/>
                     <field name="partner_id" readonly="1"/>
                     <field name="user_id" readonly="1"/>
                     <field name="sale_close_no" />
                     <field name="manager_user_id" invisible="1" />
                     <field name="deposit" invisible="1" />
+                    <field name="amount_untaxed" />
                     <field name="amount_total" sum="Total Tax Included"/>
                     <field name="residual" invisible="1" />
                     <field name="sale_revision" invisible="1" />

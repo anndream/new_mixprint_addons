@@ -86,6 +86,7 @@ New Quotation Menu/View for Garment Business.
         'wizard/wizard_pay_commission_view.xml',
         'cheque_view.xml',
         'wizard/wizard_cheque_action_view.xml',
+        'wizard/wizard_sale_remove_tax_view.xml',
     ],
     'installable': True,
     'auto_install': False,
