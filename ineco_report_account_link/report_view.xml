@@ -41,6 +41,7 @@
             <field name="res_model">ineco.jasper.report</field>
             <field name="view_type">form</field>
             <field name="domain">['|',('module','=','account'),('module','=',False)]</field>
+            <field name="context">{'search_default_by_group':1}</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="view_ineco_account_report_tree"/>
             <field name="search_view_id" ref="ineco_jasper_report.view_ineco_jasper_report_search"/>

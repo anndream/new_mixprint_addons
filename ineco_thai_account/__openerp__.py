@@ -49,7 +49,7 @@ A. Sale Module:
         'cheque_view.xml',
         'res_company_view.xml',
         'close_account_view.xml',
-        'journal_view.xml',
+        #'journal_view.xml',
         'stock_view.xml',
         'security.xml',
         'account_view.xml',

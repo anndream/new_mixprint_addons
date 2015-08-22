@@ -130,7 +130,7 @@
                     <field name="report_group_id" />
 	               <group expand="0" string="Group By...">
 	                   <filter string="Module" icon="terp-partner" domain="[]" context="{'group_by':'module'}"/>
-                       <filter string="Report Group" domain="[]" context="{'group_by': 'report_group_id'}" />
+                       <filter name="by_group" string="Report Group" domain="[]" context="{'group_by': 'report_group_id'}" />
 	               </group>
               	</search>
             </field>
