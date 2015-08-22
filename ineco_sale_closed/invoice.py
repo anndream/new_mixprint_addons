@@ -62,20 +62,46 @@ class account_invoice(osv.osv):
               pp.no_commission = True
               and ai.id = %s
           """
+        commission_sql = """
+            select commission_rate from res_users
+            where id = %s
+        """
         for data in self.browse(cr, uid, ids):
-            total = 0.00
-            cr.execute(sql % data.id)
-            sale_data = cr.dictfetchone()
-            if sale_data:
-                total = sale_data['total']
-            res[data.id] = total
+            commission_rate = 0.00
+            cr.execute(commission_sql % data.user_id.id)
+            commission_data = cr.dictfetchone()
+            #print data.user_id.login
+            commission_rate = commission_data['commission_rate'] / 100
+            res[data.id] = {
+                'amount_delivery': 0.0,
+                'sale_close_commission': 0.0,
+            }
+            if not data.state in ('cancel','draft') and data.type in ('out_invoice','out_refund') :
+                total = 0.00
+                cr.execute(sql % data.id)
+                sale_data = cr.dictfetchone()
+                if sale_data:
+                    total = sale_data['total'] or 0.0
+                invoice_amount = data.amount_untaxed
+                commission = (invoice_amount - total) * commission_rate
+                res[data.id]['amount_delivery'] = total
+                res[data.id]['sale_close_commission'] = commission
         return res
 
     _inherit = "account.invoice"
     _columns = {
         'close_sale_no': fields.function(get_close_sale_no, type='char', size=64, string="Sale Close No", readonly=True),
-        'amount_delivery': fields.function(get_delivery_amount, type='float', digits=(12,4) , string="Amount Delivery", readonly=True),
         'new_close_sale_no': fields.char('Next Close Sale', size=32),
+        'amount_delivery': fields.function(get_delivery_amount, type='float', digits=(12,4) ,
+            string="Amount Delivery", readonly=True,
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+            }, multi="commission"),
+        'sale_close_commission': fields.function(get_delivery_amount, type='float', digits=(12,4) ,
+            string="Amount Commission", readonly=True,
+            store={
+                'account.invoice': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+            }, multi="commission"),
     }
     
     def button_close_sale(self, cr, uid, ids, context=None):

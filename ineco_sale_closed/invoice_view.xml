@@ -1,27 +1,41 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-       	<record model="ir.ui.view" id="view_ineco_closesale_invoice_form">
-	      	<field name="name">ineco.closesale.invoice.form</field>
-	      	<field name="model">account.invoice</field>
-	      	<field name="inherit_id" ref="account.invoice_form"/>
-	      	<field name="arch" type="xml">    
-	      		<button name="action_cancel_draft" position="before">
-	      			<button name="%(action_select_close_saleorder)d" 
-	      				attrs="{'invisible':['|',('close_sale_no', '!=', False),('residual','!=',0)]}"
-	      				string="Close Sales" type="action" /> 
-	      		</button>
-	      		<field name="account_id" position="after">
-	      			<field name="close_sale_no" />
-					<field name="new_close_sale_no" />
-	      		</field>
-	      	</field>
-	    </record>
+        <record model="ir.ui.view" id="view_ineco_closesale_invoice_form">
+            <field name="name">ineco.closesale.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <button name="action_cancel_draft" position="before">
+                    <button name="%(action_select_close_saleorder)d"
+                            attrs="{'invisible':['|',('close_sale_no', '!=', False),('residual','!=',0)]}"
+                            string="Close Sales" type="action"/>
+                </button>
+                <field name="account_id" position="after">
+                    <field name="close_sale_no"/>
+                    <field name="new_close_sale_no"/>
+                </field>
+            </field>
+        </record>
+
+        <!--
+            <record model="ir.ui.view" id="view_ineco_thai_closesale_form">
+                <field name="name">ineco.account.invoice.form</field>
+                <field name="model">account.invoice</field>
+                <field name="inherit_id" ref="ineco_thai_account.view_ineco_account_invoice_form"/>
+                <field name="arch" type="xml">
+                    <field name="commission_sale" position="before">
+                        <field name="sale_close_commission" />
+                    </field>
+                </field>
+            </record>
+        -->
     </data>
-    
-<!-- 	      			
-	<button name="button_close_sale" string="Close Sale" type="object" groups="base.group_user"/> 
-		      			<button name="%(action_select_close_sale)d" string="Close Sales" type="action" /> 
--->
+
+
+    <!--
+        <button name="button_close_sale" string="Close Sale" type="object" groups="base.group_user"/>
+                              <button name="%(action_select_close_sale)d" string="Close Sales" type="action" />
+    -->
 
 </openerp>

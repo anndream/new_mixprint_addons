@@ -21,7 +21,7 @@
 
 {
     'name' : 'INECO Sale Closed',
-    'version' : '0.1',
+    'version' : '0.2',
     'depends' : ['base','sale','account'],
     'author' : 'Mr.Tititab Srisookco',
     'category': 'INECO',
