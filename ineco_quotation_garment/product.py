@@ -33,13 +33,15 @@ from openerp.tools.translate import _
 class product_category(osv.osv):
     
     _inherit = 'product.category'
-    _description = 'add ratio for garment'
+    _description = 'add ratio, fabric for garment'
     _columns = {
         'ratio': fields.float('Ratio', digits=(16,4)),
         'cost_type_ids': fields.one2many('ineco.category.costtype','product_category_id','Costs'),
+        'fabric': fields.boolean('Fabric'),
     }
     _defaults = {
-        'ratio': 1.0000
+        'ratio': 1.0000,
+        'fabric': False,
     }
 
 class ineco_category_costtype(osv.osv):
@@ -97,6 +99,7 @@ having (sum(qty) > 0.00)
         'no_return_product': fields.boolean('No Return'),
         'product_name_eng': fields.char('English Name', size=128),
         'pattern': fields.boolean('Pattern'),
+        'production_name': fields.char('Production Name', size=128),
     }
     _defaults = {
         'no_return_product': False,

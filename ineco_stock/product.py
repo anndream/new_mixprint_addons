@@ -94,7 +94,7 @@ class product_category(osv.osv):
         }
         product_obj = self.pool.get('product.product')
         for id in ids:
-            product_ids = product_obj.search(cr, uid, [('categ_id','=',id)])
+            product_ids = product_obj.search(cr, uid, [('categ_id','child_of',id)])
             onhand = 0
             forecast = 0
             for product in product_obj.browse(cr, uid, product_ids):

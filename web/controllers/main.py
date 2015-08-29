@@ -1370,6 +1370,36 @@ class Binary(openerpweb.Controller):
         ]
         return req.make_response(image_data, headers)
 
+    @openerpweb.httprequest
+    def image_sale_line_property(self, req, dbname=None, id=None):
+        # TODO add etag, refactor to use /image code for etag
+        uid = None
+        if req.session._db:
+            dbname = req.session._db
+            uid = req.session._uid
+        elif dbname is None:
+            dbname = db_monodb(req)
+
+        if uid is None:
+            uid = openerp.SUPERUSER_ID
+
+        if not dbname:
+            image_data = self.placeholder(req, 'logo.png')
+        else:
+            registry = openerp.modules.registry.RegistryManager.get(dbname)
+            with registry.cursor() as cr:
+                #user = registry.get('res.users').browse(cr, uid, uid)
+                data = registry.get('sale.line.property').browse(cr, uid, int(id))
+                if data.image_medium:
+                    image_data = data.image_medium.decode('base64')
+                else:
+                    image_data = self.placeholder(req, 'nologo.png')
+        headers = [
+            ('Content-Type', 'image/png'),
+            ('Content-Length', len(image_data)),
+        ]
+        return req.make_response(image_data, headers)
+
 class Action(openerpweb.Controller):
     _cp_path = "/web/action"
 

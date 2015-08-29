@@ -33,6 +33,8 @@ from openerp.addons.ineco_report import jasperclient
 import os
 import unicodedata
 import string
+from openerp import tools
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -45,7 +47,7 @@ class sale_property(osv.osv):
         'name': fields.char('Description',size=64,required=True),
         'active': fields.boolean('Active'),
         'seq': fields.integer('Sequence', required=True),
-        'type': fields.selection([('default','Default'),('cross','Cross Tab'),('form1','Form1')],'Type')
+        'type': fields.selection([('default','Default'),('cross','Cross Tab'),('form1','Form1'),('fabric','Fabrics and Colors')],'Type')
     }
     _defaults = {
         'active': True,
@@ -107,6 +109,15 @@ class sale_style(osv.osv):
     
 class sale_line_property(osv.osv):
 
+    def _get_image(self, cr, uid, ids, name, args, context=None):
+        result = dict.fromkeys(ids, False)
+        for obj in self.browse(cr, uid, ids, context=context):
+            result[obj.id] = tools.image_get_resized_images(obj.image)
+        return result
+
+    def _set_image(self, cr, uid, id, name, value, args, context=None):
+        return self.write(cr, uid, [id], {'image': tools.image_resize_image_big(value)}, context=context)
+
     _name = 'sale.line.property'
     _description = 'Property of Sale Line'
     _columns = {
@@ -120,6 +131,32 @@ class sale_line_property(osv.osv):
                 'sale.line.property': (lambda self, cr, uid, ids, c={}: ids, [], 10),
             }, readonly=True),
         'note': fields.text('Note'),
+        'image': fields.binary('Image'),
+        'image_medium': fields.function(_get_image, fnct_inv=_set_image,
+            string="Medium-sized photo", type="binary", multi="_get_image",
+            store = {
+                'sale.line.property': (lambda self, cr, uid, ids, c={}: ids, ['image'], 10),
+            },
+            help="Medium-sized photo of the employee. It is automatically "\
+                 "resized as a 128x128px image, with aspect ratio preserved. "\
+                 "Use this field in form views or some kanban views."),
+        'image_small': fields.function(_get_image, fnct_inv=_set_image,
+            string="Smal-sized photo", type="binary", multi="_get_image",
+            store = {
+                'sale.line.property': (lambda self, cr, uid, ids, c={}: ids, ['image'], 10),
+            },
+            help="Small-sized photo of the employee. It is automatically "\
+                 "resized as a 64x64px image, with aspect ratio preserved. "\
+                 "Use this field anywhere a small image is required."),
+        'fabric_category_id': fields.many2one('product.category','Fabric Category'),
+        'sub_category_id': fields.many2one('product.category','Sub Category'),
+        'product_id': fields.many2one('product.product','Fabrics and Colors'),
+        'fabric_quantity': fields.related('fabric_category_id','product_onhand', type='float',
+                                            string='Fabric Onhand', readonly=True, store=True),
+        'subcategory_quantity': fields.related('sub_category_id','product_onhand', type='float',
+                                            string='Sub Category Onhand', readonly=True, store=True),
+        'product_quantity': fields.related('product_id','qty_available', type='float',
+                                            string='Product Onhand', readonly=True, store=True),
     }
     #_sql_constraints = [
     #    ('name_property_unique', 'unique (name, property_id, sale_line_id)', 'Description and property must be unique !')
@@ -133,10 +170,23 @@ class sale_line_property(osv.osv):
         bom_obj = self.pool.get('sale.property').browse(cr, uid, property_id)
         if bom_obj:
             result = bom_obj.seq
-        return {'value': {
-            'sequence': result,
-            }
+        return {
+            'value': {
+                'sequence': result,
+            },
         }
+
+    def onchange_fabric_category_id(self, cr, uid, ids, category_id, context=None):
+        return {'value':
+                    {'sub_category_id': False,
+                     'product_id': False}
+                }
+
+    def onchange_subcategory_id(self, cr, uid, ids, subcategory_id, context=None):
+        return {'value':
+                    {'product_id': False}
+                }
+
     
 class sale_line_property_other(osv.osv):
     _name = 'sale.line.property.other'

@@ -134,6 +134,7 @@
             		<field name="no_return_product" />
             		<field name="pattern" />
             		<field name="product_name_eng" />
+                    <field name="production_name" />
             	</field>
             </field>
         </record>
@@ -147,6 +148,7 @@
             <field name="arch" type="xml">
             	<field name="type" position="after">
             		<field name="ratio" />
+                    <field name="fabric" />
             		<notebook colspan="4">
             			<page string="Default Cost">
             				<field name="cost_type_ids" nolable="1" >
@@ -172,6 +174,7 @@
 
                     <field name="complete_name" position="after">
                     	<field name="ratio" />
+                        <field name="fabric" />
                     </field>
 
             </field>

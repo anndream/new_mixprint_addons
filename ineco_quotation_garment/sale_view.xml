@@ -411,12 +411,31 @@
 		                                        
 		                                        <page string="Sale Property">
 		                                            <field name="order_line_property_ids">
-		                                                <tree string="Property" editable="bottom">
+		                                                <tree string="Property" >
                                                             <field name="sequence" widget="handle" nolabel="1"/>
 		                                                    <field name="property_id" on_change="onchange_property_id(property_id)" />
 		                                                    <field name="name" />
                                                             <field name="note" />
 		                                                </tree>
+                                                        <form string="Property">
+		                                                    <field name="property_id" on_change="onchange_property_id(property_id)" />
+                                                            <field name="sequence" invisible="1" />
+                                                            <label for="fabric_div" string="Fabrics and Colors" />
+                                                            <div name="fabric_div">
+                                                                <field name="fabric_category_id" domain="[('fabric','=',True)]" on_change="onchange_fabric_category_id(fabric_category_id)" />
+                                                                <field name="sub_category_id" domain="[('parent_id','=',fabric_category_id)]" on_change="onchange_subcategory_id(sub_category_id)" />
+                                                                <field name="product_id" domain="[('categ_id','=',sub_category_id)]" />
+		                                                    </div>
+                                                            <label for="fabric_quantity_div" string="Quantity" />
+                                                            <div name="fabric_quantity_div">
+                                                                <field name="fabric_quantity" />
+                                                                <field name="subcategory_quantity" />
+                                                                <field name="product_quantity" />
+                                                            </div>
+                                                            <field name="name" />
+                                                            <field name="note" />
+                                                            <field name="image" />
+                                                        </form>
 		                                            </field>
 		                                        </page>
 
@@ -1231,6 +1250,7 @@
                     <field name="note" />
                     <field name="sequence"/>
                     <field name="order_id" readonly="1" />
+                    <field name="image" />
                 </form>
             </field>
         </record>		
