@@ -148,6 +148,7 @@ class sale_line_property(osv.osv):
             help="Small-sized photo of the employee. It is automatically "\
                  "resized as a 64x64px image, with aspect ratio preserved. "\
                  "Use this field anywhere a small image is required."),
+        'fabric': fields.boolean('Fabric'),
         'fabric_category_id': fields.many2one('product.category','Fabric Category'),
         'sub_category_id': fields.many2one('product.category','Sub Category'),
         'product_id': fields.many2one('product.product','Fabrics and Colors'),
@@ -158,6 +159,10 @@ class sale_line_property(osv.osv):
         'product_quantity': fields.related('product_id','qty_available', type='float',
                                             string='Product Onhand', readonly=True, store=True),
     }
+
+    _defaults = {
+        'fabric': False,
+    }
     #_sql_constraints = [
     #    ('name_property_unique', 'unique (name, property_id, sale_line_id)', 'Description and property must be unique !')
     #]
@@ -166,14 +171,16 @@ class sale_line_property(osv.osv):
     def onchange_property_id(self, cr, uid, ids, property_id, context=None):
         if context==None:
             context={}
-        result = 100
+        res = {
+            'sequence': 100,
+            'fabric': False,
+        }
         bom_obj = self.pool.get('sale.property').browse(cr, uid, property_id)
         if bom_obj:
-            result = bom_obj.seq
+            res['sequence'] = bom_obj.seq
+            res['fabric'] = bom_obj.type == 'fabric'
         return {
-            'value': {
-                'sequence': result,
-            },
+            'value': res,
         }
 
     def onchange_fabric_category_id(self, cr, uid, ids, category_id, context=None):
