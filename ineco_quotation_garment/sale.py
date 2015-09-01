@@ -381,6 +381,16 @@ class sale_order(osv.osv):
                 result[obj.id]['commission_ready'] = data[2] - data[6] <= data[5]
         return result
 
+    def _get_customer_po(self, cr, uid, ids, name, args, context=None):
+        result = dict.fromkeys(ids, False)
+        for obj in self.browse(cr, uid, ids, context=context):
+            result[obj.id] = {
+                'customer_po_ready': False
+            }
+            if obj.customer_po_attach:
+                result[obj.id]['customer_po_ready'] = True
+        return result
+
     def _get_residual(self, cr, uid, ids, name, args, context=None):
         result = dict.fromkeys(ids, False)
         for obj in self.browse(cr, uid, ids, context=context):
@@ -538,6 +548,12 @@ class sale_order(osv.osv):
                     },
                     type="boolean", multi="_production"),
         'nas_ok': fields.boolean('Nas Ready'),
+        'customer_po_attach': fields.binary('PO Attachment'),
+        'customer_po_ready': fields.function(_get_customer_po, string="Po Ready",
+                    store={
+                        'sale.order': (lambda self, cr, uid, ids, c={}: ids, [], 10),
+                    },
+                    type="boolean", multi="_customer_po"),
     }
     _defaults = {
         'cancel_sample_order': False,
@@ -546,6 +562,7 @@ class sale_order(osv.osv):
         'relate_garment_order_no': False,
         'commission_ready': False,
         'nas_ok': False,
+        'customer_po_ready': False,
     }
 
     def name_get(self, cr, uid, ids, context=None):

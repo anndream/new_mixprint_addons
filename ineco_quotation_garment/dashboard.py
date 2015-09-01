@@ -1431,10 +1431,10 @@ class ineco_color_of_year(osv.osv):
         'm09': fields.integer('September'),
         'm10': fields.integer('Octorber'),
         'm11': fields.integer('November'),
-        'm12': fields.integer('December'),        
+        'm12': fields.integer('December'),
     }
     _order = 'total desc'
-    
+
     def init(self, cr):
         tools.drop_view_if_exists(cr, 'ineco_color_of_year')
         cr.execute(""" CREATE VIEW ineco_color_of_year AS 
@@ -1468,4 +1468,35 @@ order by
   sum(sol.product_uom_qty) desc,
   sc.name
 limit 10
+        """)
+
+class ineco_sale_mo_balance(osv.osv):
+    _name = 'ineco.sale.mo.balance'
+    _auto = False
+    _columns = {
+        'user_id': fields.many2one('res.users','Sale') ,
+        'sale_count': fields.integer('Count'),
+        'amount_untaxed': fields.float('Total'),
+    }
+    _order = 'amount_untaxed desc'
+
+    def init(self, cr):
+        tools.drop_view_if_exists(cr, 'ineco_sale_mo_balance')
+        cr.execute(""" CREATE VIEW ineco_sale_mo_balance AS
+
+select
+  min(user_id) as id,
+  user_id,
+  count(*) as sale_count,
+  sum(amount_untaxed) as amount_untaxed
+from
+  sale_order so
+
+where
+  customer_po_ready = True
+  and garment_order_date is null
+
+group by
+  user_id
+
         """)

@@ -298,7 +298,8 @@
             <field name="name">ineco.quotation.tree</field>
             <field name="model">sale.order</field>
             <field name="arch" type="xml">
-                <tree string="Quotation" fonts="bold:message_unread==True" colors="grey:state=='cancel';blue:state in ('waiting_date','manual');red:state in ('invoice_except','shipping_except')">
+                <tree string="Quotation" fonts="bold:message_unread==True"
+                      colors="grey:state=='cancel';blue:state in ('waiting_date','manual');red:customer_po_ready != False and not garment_order_date;">
                     <field name="message_unread" invisible="1"/>
                     <field name="name" string="Quotation No"/>
                     <field name="date_order"/>
@@ -312,7 +313,9 @@
                     <field name="sale_revision" />
                     <field name="state"/>
                     <field name="date_sale_close" invisible="0" />
+                    <field name="garment_order_date" invisible="1" />
                     <field name="start_production" invisible="1" />
+                    <field name="customer_po_ready" invisible="1" />
                 </tree>
             </field>
         </record>
@@ -534,6 +537,14 @@
                         		</tree>
                         	</field>
                         </page>
+                        <page string="Customer PO Attachment">
+                            <group>
+                                <group>
+                                    <field name="customer_po_attach" />
+                                    <field name="customer_po_ready" readonly="1" />
+                                </group>
+                            </group>
+                        </page>
                         <page string="Reference">
                         	<group>
                         		<group string="Sample">
@@ -566,7 +577,7 @@
 		                            	string="Get Garment No"
 		                            	type="object" 
 		                            	icon="gtk-justify-fill"
-		                            	attrs="{'invisible': ['|',('garment_order_no','!=',False),('state','=','draft')]}" />
+		                            	attrs="{'invisible': ['|','|',('garment_order_no','!=',False),('state','=','draft'),('custmer_po_ready','!=',True)]}" />
                                     <button name="action_regen_mo"
                                             string="Re Garment"
                                             type="object"
@@ -623,7 +634,8 @@
                     <filter icon="terp-dolar_ok!" name="notcofirm" string="Close Date not Confirm" domain="[('date_sale_close','!=',False),('state','=','draft')]"  />
                     <separator/>
                     <filter string="My Sale Orders" domain="[('user_id','=',uid)]" help="My Sale Orders" icon="terp-personal" name="my_sale_orders_filter"/>
-                    <filter string="No MO" domain="[('date_sale_close','!=',False),('garment_order_date','=',False)]" name="date_error" />
+                    <filter string="No MO" domain="[('date_sale_close','!=',False),('garment_order_date','=',False),('customer_po_ready','!=',False)]" name="date_error" />
+                    <filter string="PO No MO" domain="[('customer_po_ready','!=',False),('garment_order_date','=',False)]" name="customer_po_mo" />
                     <filter string="Production Not Available" domain="[('start_production','=',False),('state','not in',('draft','cancel')]" name="production_not_available" />
                     <field name="partner_id" />
                     <field name="user_id" />
@@ -636,7 +648,7 @@
                         <filter string="Approval" icon="terp-personal" domain="[]" context="{'group_by':'manager_user_id'}"/>
                         <filter string="Status" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="Order Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_order'}"/>
-                        <filter string="Close Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_sale_close'}"/>                      
+                        <filter string="Close Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_sale_close'}"/>
                     </group>
 					<group string="Display">
                         <filter string="Show Deposit" context="{'invisible_deposit': False}" help="Show Deposit"/>

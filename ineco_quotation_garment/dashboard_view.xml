@@ -1085,7 +1085,38 @@
               </p>
             </field>
         </record>
-                    
+
+         <!-- MO Balance -->
+        <record id="view_ineco_sale_mo_balance_tree" model="ir.ui.view">
+            <field name="name">ineco.sale.mo.balance.tree</field>
+            <field name="model">ineco.sale.mo.balance</field>
+            <field name="arch" type="xml">
+                <tree string="MO Balance">
+                    <field name="user_id" />
+                    <field name="sale_count" sum="Total" />
+                    <field name="amount_untaxed" sum="Total" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_ineco_sale_mo_balance" model="ir.actions.act_window">
+            <field name="name">MO Balance</field>
+            <field name="res_model">ineco.sale.mo.balance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_ineco_sale_mo_balance_tree" />
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a sale summary.
+              </p><p>
+                This is the list of all problem type that have to be
+                prepared, according to your different sales orders and your
+                logistics rules.
+              </p>
+            </field>
+        </record>
+
       <!-- Dashboard Columns -->
       <record model="ir.ui.view" id="board_mixprint_dashboard_form">
             <field name="name">Mixprint Dashboard</field>
@@ -1098,6 +1129,7 @@
                         	<action string="My Opportunity Stages" name="%(action_ineco_sale_myopportunity)d"/>
                         	<action string="My Sale Logs" name="%(action_ineco_sale_mylog)d"/>                      	
                         	<action string="Opportunity Stages" name="%(action_ineco_sale_summary4)d"/>
+                            <action string="MO Balance" name="%(action_ineco_sale_mo_balance)d" />
                         	<action string="Sale Log" name="%(action_ineco_sale_summary5)d"/>
                         	<action string="Smart Opportunity Stages" name="%(action_ineco_sale_summary4smart)d"/>
                         	<action string="Smart Sale Log" name="%(action_ineco_sale_summary5smart)d"/>
