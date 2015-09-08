@@ -548,12 +548,17 @@ class sale_order(osv.osv):
                     },
                     type="boolean", multi="_production"),
         'nas_ok': fields.boolean('Nas Ready'),
-        'customer_po_attach': fields.binary('PO Attachment'),
+        'customer_po_attach': fields.binary('PO Attachment', ),
+        'customer_po_fname': fields.char('File name', size=64,),
         'customer_po_ready': fields.function(_get_customer_po, string="Po Ready",
                     store={
                         'sale.order': (lambda self, cr, uid, ids, c={}: ids, [], 10),
                     },
                     type="boolean", multi="_customer_po"),
+        #2015-09-08
+        'allow_confirm_sale': fields.boolean('Allow Confirm Sale', track_visibility='onchange'),
+        'check_confirm_sale': fields.related('shop_id','allow_confirm_sale',string='Check Confirm Sale',
+                                             type='boolean', reaodnly=True),
     }
     _defaults = {
         'cancel_sample_order': False,
@@ -563,6 +568,7 @@ class sale_order(osv.osv):
         'commission_ready': False,
         'nas_ok': False,
         'customer_po_ready': False,
+        'allow_confirm_sale': False,
     }
 
     def name_get(self, cr, uid, ids, context=None):
@@ -1172,5 +1178,16 @@ class ineco_sale_order_process(osv.osv):
             'unit_cost': result,
             }
         }
+
+#2015-09-08
+class sale_shop(osv.osv):
+    _inherit = "sale.shop"
+    _description = "Add Auto Sequence, Stock Journal"
+    _columns = {
+        'allow_confirm_sale': fields.boolean('Allow Confirm Sale'),
+    }
+    _defaults = {
+        'allow_confirm_sale': False,
+    }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -237,7 +237,62 @@ class ineco_pattern(osv.osv):
             for pattern in pattern_ids:
                 result[pattern] = True
         return result.keys()
-        
+
+    def _get_related_quantity(self, cr, uid, ids, name, args, context=None):
+        result = dict.fromkeys(ids, False)
+        order_obj = self.pool.get('sale.order')
+        for obj in self.browse(cr, uid, ids, context=context):
+            master_qty = 0.0
+            this_qty = obj.saleorder_id.order_total
+            next_quantity = ''
+            if obj.saleorder_id.garment_order_no:
+                child_ids = order_obj.search(cr, uid, [('relate_garment_order_no','=',obj.saleorder_id.garment_order_no),
+                                                       ('state','!=','cancel')])
+                if child_ids:
+                    for data in order_obj.browse(cr, uid, child_ids):
+                        next_quantity = next_quantity +'%.0f+' % data.order_total
+            if next_quantity:
+                if obj.saleorder_id.order_total:
+                    next_quantity = next_quantity + '(%.0f)' % obj.saleorder_id.order_total
+                else:
+                    next_quantity = next_quantity + '(%.0f)' % obj.order_qty
+            else:
+                if obj.saleorder_id.order_total:
+                    next_quantity = next_quantity + '%.0f' % obj.saleorder_id.order_total
+                else:
+                    next_quantity = next_quantity + '%.0f' % obj.order_qty
+
+            if obj.saleorder_id and obj.saleorder_id.relate_garment_order_no:
+                order_ids = order_obj.search(cr, uid, [('garment_order_no','=',obj.saleorder_id.relate_garment_order_no),
+                                           ('state','!=','cancel')])
+                if order_ids:
+                    order = order_obj.browse(cr, uid, order_ids)[0]
+                    next_quantity = ''
+                    if order.garment_order_no:
+                        child_ids = order_obj.search(cr, uid, [('relate_garment_order_no','=',order.garment_order_no),
+                                                               ('state','!=','cancel')])
+                        if child_ids:
+                            for data in order_obj.browse(cr, uid, child_ids):
+                                if data.id == obj.saleorder_id.id:
+                                    next_quantity = next_quantity +'(%.0f)+' % data.order_total
+                                else:
+                                    next_quantity = next_quantity +'%.0f+' % data.order_total
+                    if next_quantity:
+                        if order.order_total:
+                            next_quantity = next_quantity + '%.0f' % order.order_total
+                        else:
+                            next_quantity = next_quantity + '%.0f' % obj.order_qty
+                    else:
+                        if order.order_total:
+                            next_quantity = next_quantity + '%.0f' % order.order_total
+                        else:
+                            next_quantity = next_quantity + '%.0f' % obj.order_qty
+
+            result[obj.id] = {
+                'quantity_related': next_quantity
+            }
+        return result
+
     _name = 'ineco.pattern'
     _inherit = ['mail.thread']
     _description = "Pattern"
@@ -348,6 +403,7 @@ class ineco_pattern(osv.osv):
         #'employee_sleeve_id': fields.many2one('hr.employee', 'Sleeve Employee'),
         #'date_sleeve_start': fields.date('Date Sleeve Start'),
         #'date_sleeve_finish': fields.date('Date Sleeve Finish'),
+        'quantity_related': fields.function(_get_related_quantity, string="Quantity", type="char", size=32, multi="_related_quantity"),
     }
     
     _sql_constraints = [

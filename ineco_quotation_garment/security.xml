@@ -7,6 +7,11 @@
 	        <field name="category_id" ref="base.module_category_hidden"/>
 	    </record>
 
+		<record id="base.group_sale_allow_confirm" model="res.groups">
+	        <field name="name">Allow Confirm Sale</field>
+	        <field name="category_id" ref="base.module_category_hidden"/>
+	    </record>
+
 	    <record id="base.group_garment_pattern" model="res.groups">
 	        <field name="name">Garment Pattern</field>
 	        <field name="category_id" ref="base.module_category_hidden"/>
