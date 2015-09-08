@@ -51,7 +51,8 @@ class wizard_select_close_saleorder(osv.osv_memory):
             for invoice in self.pool.get('account.invoice').browse(cr, uid, invoice_draft_ids):
                 if not invoice.close_sale_no and invoice.state == 'paid' :
                     invoice_ids.append(invoice.id)
-                    sale_no_list += invoice.origin.split(':')
+                    if invoice.origin:
+                        sale_no_list += invoice.origin.split(':')
                 sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('name','in',sale_no_list),('sale_close_no','=',False)])
                 res = {
                      'partner_id': invoice_obj.partner_id.id, 
