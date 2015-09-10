@@ -1495,6 +1495,7 @@
 	      	<field name="arch" type="xml">
 	        	<field name="project_id" position="after">
 	        		<field name="allow_confirm_sale" />
+                    <field name="skip_customer_po" />
 	        	</field>
 	      	</field>
 	    </record>
@@ -1506,6 +1507,7 @@
 	      	<field name="arch" type="xml">
 	        	<field name="project_id" position="after">
 	        		<field name="allow_confirm_sale" />
+                    <field name="skip_customer_po" />
 	        	</field>
 	      	</field>
 	    </record>

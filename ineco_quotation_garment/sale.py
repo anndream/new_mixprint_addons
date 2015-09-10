@@ -387,7 +387,8 @@ class sale_order(osv.osv):
             result[obj.id] = {
                 'customer_po_ready': False
             }
-            if obj.customer_po_attach:
+            #2015-09-10
+            if obj.customer_po_attach or obj.shop_id.skip_customer_po:
                 result[obj.id]['customer_po_ready'] = True
         return result
 
@@ -1185,9 +1186,12 @@ class sale_shop(osv.osv):
     _description = "Add Auto Sequence, Stock Journal"
     _columns = {
         'allow_confirm_sale': fields.boolean('Allow Confirm Sale'),
+        #2015-09-10
+        'skip_customer_po': fields.boolean('Skip Customer PO'),
     }
     _defaults = {
         'allow_confirm_sale': False,
+        'skip_customer_po': False,
     }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
