@@ -1500,3 +1500,43 @@ group by
   user_id
 
         """)
+
+class ineco_sale_mf_balance(osv.osv):
+    _name = 'ineco.sale.mf.balance'
+    _auto = False
+    _columns = {
+        'user_id': fields.many2one('res.users','Sale',readonly=1),
+        'total': fields.float('Total',readonly=1),
+        'nickname': fields.char('Nickname', size=32, readonly=1)
+    }
+    _order = 'total desc'
+
+    def init(self, cr):
+        tools.drop_view_if_exists(cr, 'ineco_sale_mf_balance')
+        cr.execute(""" CREATE VIEW ineco_sale_mf_balance AS
+
+select min(user_id) as id,  user_id, count(*) as total, ru.nickname from sale_order so
+join sale_shop ss on ss.id = so.shop_id
+join res_users ru on ru.id = so.user_id
+where ss.allow_confirm_sale = true
+  and so.state in ('draft','send')
+  and so.allow_confirm_sale = false
+group by
+  user_id, nickname
+
+        """)
+
+    def open_quotation(self, cr, uid, ids, context=None):
+        """
+        Open meeting's calendar view to schedule meeting on current opportunity.
+        :return dict: dictionary value for created Meeting view
+        """
+        data = self.browse(cr, uid, ids[0], context)
+        res = self.pool.get('ir.actions.act_window').for_xml_id(cr, uid, 'ineco_quotation_garment', 'action_ineco_quotations', context)
+        #print data.user_id.id
+        res['context'] = {
+            'search_default_wait_confirm_sale': 1,
+            'search_default_user_id': data.id,
+        }
+        res['domain'] = [('state','in',['draft','send'])]
+        return res
