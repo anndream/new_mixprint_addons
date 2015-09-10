@@ -74,7 +74,59 @@ class mrp_production(osv.osv):
                 'date_plan_finish2': obj.date_plan_finish or False
             }
         return result
-    
+
+    def _get_related_quantity(self, cr, uid, ids, name, args, context=None):
+        result = dict.fromkeys(ids, False)
+        order_obj = self.pool.get('sale.order')
+        for obj in self.browse(cr, uid, ids, context=context):
+            master_qty = 0.0
+            this_qty = obj.sale_order_id.order_total
+            next_quantity = ''
+            if obj.sale_order_id.garment_order_no:
+                child_ids = order_obj.search(cr, uid, [('relate_garment_order_no','=',obj.sale_order_id.garment_order_no),
+                                                       ('state','!=','cancel')])
+                if child_ids:
+                    for data in order_obj.browse(cr, uid, child_ids):
+                        next_quantity = next_quantity +'%.0f+' % data.order_total
+            if next_quantity:
+                if obj.sale_order_id.order_total:
+                    next_quantity = next_quantity + '%.0f' % obj.sale_order_id.order_total
+                else:
+                    next_quantity = next_quantity + '%.0f' % obj.product_qty
+            else:
+                if obj.sale_order_id.order_total:
+                    next_quantity = next_quantity + '%.0f' % obj.sale_order_id.order_total
+                else:
+                    next_quantity = next_quantity + '%.0f' % obj.product_qty
+
+            if obj.sale_order_id and obj.sale_order_id.relate_garment_order_no:
+                order_ids = order_obj.search(cr, uid, [('garment_order_no','=',obj.sale_order_id.relate_garment_order_no),
+                                           ('state','!=','cancel')])
+                if order_ids:
+                    order = order_obj.browse(cr, uid, order_ids)[0]
+                    next_quantity = ''
+                    if order.garment_order_no:
+                        child_ids = order_obj.search(cr, uid, [('relate_garment_order_no','=',order.garment_order_no),
+                                                               ('state','!=','cancel')])
+                        if child_ids:
+                            for data in order_obj.browse(cr, uid, child_ids):
+                                next_quantity = next_quantity +'%.0f+' % data.order_total
+                    if next_quantity:
+                        if order.order_total:
+                            next_quantity = next_quantity + '%.0f' % order.order_total
+                        else:
+                            next_quantity = next_quantity + '%.0f' % obj.product_qty
+                    else:
+                        if order.order_total:
+                            next_quantity = next_quantity + '%.0f' % order.order_total
+                        else:
+                            next_quantity = next_quantity + '%.0f' % obj.product_qty
+
+            result[obj.id] = {
+                'quantity_related': next_quantity
+            }
+        return result
+
     _inherit = 'mrp.production'
     _description = 'MRP for Garment'
     _columns = {
@@ -106,6 +158,9 @@ class mrp_production(osv.osv):
         'ticket_ids': fields.one2many('ineco.mrp.production.ticket','production_id','Tickets'),
         'ticket_size': fields.integer('Ticket Size'),
         'machine_id': fields.many2one('ineco.mrp.machine', 'Machine'),
+        #2015-09-08
+        'quantity_related': fields.function(_get_related_quantity, string="Order Qty", type="char", size=32, multi="_related_quantity"),
+
     }
     _defaults = {
         'is_print': False,
